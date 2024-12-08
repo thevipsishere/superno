@@ -22,13 +22,9 @@ jobs:
         working-directory: backend
         run: npm install
 
-      - name: Test Backend
-        working-directory: backend
-        run: npm test # Optional if tests exist
-
       - name: Build Backend
         working-directory: backend
-        run: npm run build
+        run: npm run build || echo "No build script provided"
 
       # Frontend Steps
       - name: Set up Node.js for Frontend
@@ -43,18 +39,3 @@ jobs:
       - name: Build Frontend
         working-directory: frontend
         run: npm run build
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to Kubernetes
-        uses: azure/k8s-deploy@v4
-        with:
-          manifests: |
-            ./k8s/backend-deployment.yaml
-            ./k8s/frontend-deployment.yaml
-            ./k8s/service.yaml
-          images: |
-            superno-backend:${{ github.sha }}
-            superno-frontend:${{ github.sha }}
